@@ -1,4 +1,4 @@
-const API_URL = 'https://jsonplaceholder.typicode.com/'
+const API_URL = 'https://jsonplaceholder.typicode.com/users'
 
 export async function getPosts() {
   const res = await fetch(`${API_URL}/posts`)
