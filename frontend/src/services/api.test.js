@@ -1,14 +1,30 @@
-import { describe, it, expect } from 'vitest'
-import { getPosts, getPostById } from './api'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { getPostById } from './api'
+
+global.fetch = vi.fn()
 
 describe('API', () => {
-  it('fetch posts', async () => {
-    const posts = await getPosts()
-    expect(posts.length).toBeGreaterThan(0)
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   it('fetch one post', async () => {
-    const post = await getPostById(1)
-    expect(post).toHaveProperty('id')
+    const mockResponse = { id: 1, title: 'Post mock', body: 'Contenido de prueba' }
+
+    fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse)
+    })
+
+    const result = await getPostById(1)
+    expect(result).toEqual(mockResponse)
+  })
+
+  it('debe lanzar error si el response no es ok', async () => {
+    fetch.mockResolvedValue({
+      ok: false
+    })
+
+    await expect(getPostById(1)).rejects.toThrow('Error al obtener post')
   })
 })
